@@ -1,18 +1,18 @@
-# CinemaHQ
+# Moovies2
 
-Standalone CinemaHQ APK repo.
+Standalone Moovies2 APK repo.
 
 ## Files
 
-- `CinemaHQ.apk` - the downloadable standalone APK copied from Shield
+- `Moovies2.apk` - the downloadable standalone APK copied from Shield
 - `index.html` - landing page for GitHub Pages
 - `release.json` - current release metadata
-- `Start CinemaHQ.cmd` - local launcher for Windows
-- `scripts/Pull-Foreground-Apk-From-Shield.ps1` - pulls the currently open Shield app into this repo as `CinemaHQ.apk`
+- `Start Moovies2.cmd` - local launcher for Windows
+- `scripts/Pull-Foreground-Apk-From-Shield.ps1` - pulls the currently open Shield app into this repo as `Moovies2.apk`
 
 ## Shield pull flow
 
-1. Open Cinema HQ on the Shield and leave it in the foreground.
+1. Open Moovies2 on the Shield and leave it in the foreground.
 2. Run:
 
 ```powershell
@@ -25,4 +25,4 @@ Standalone CinemaHQ APK repo.
 
 - Repo: `https://github.com/dude2714/cinema-hq`
 - Site: `https://dude2714.github.io/cinema-hq/`
-- APK: `https://dude2714.github.io/cinema-hq/CinemaHQ.apk`
+- APK: `https://dude2714.github.io/cinema-hq/Moovies2.apk`

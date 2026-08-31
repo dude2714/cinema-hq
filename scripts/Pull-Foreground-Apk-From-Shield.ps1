@@ -1,6 +1,6 @@
 param(
     [string]$Serial = '0321418026779',
-    [string]$OutputApk = 'CinemaHQ.apk',
+    [string]$OutputApk = 'Moovies2.apk',
     [string]$ReleaseVersion = 'shield-copy',
     [string]$Notes = 'Pulled from Shield foreground app'
 )
