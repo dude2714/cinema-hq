@@ -1,8 +1,8 @@
 ﻿{
-    "version":  "shield-copy",
-    "updatedUtc":  "2026-09-01T00:21:18Z",
+    "version":  "8.0-moovies2-fork",
+    "updatedUtc":  "2026-09-01T02:23:56Z",
     "apkFile":  "Moovies2.apk",
-    "sizeBytes":  48069151,
-    "sha256":  "C55279B3858AC9BDD9678015E48DEDA1132BD999A63BB4FE7960041A02823BC0",
-    "notes":  "Pulled from Shield source package (com.app.mlounge)"
+    "sizeBytes":  48720569,
+    "sha256":  "86180B46197EFA3FD9A11F2389C12926BFC6506449713F27D287E8FC0CD477C8",
+    "notes":  "Separate Moovies2 fork built from CinemaHQ donor (package com.dude2714.moovies2)"
 }

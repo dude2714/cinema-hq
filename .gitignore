@@ -2,8 +2,17 @@
 apk-work/
 Moovies2-*.apk
 pull-from-shield-report.txt
+_build*.txt
 _dumpsys_pkg_*.txt
+_moovies2_*.txt
 _packages_*.txt
+_pkg_verify_*.txt
 _pkg_path_*.txt
 _resolve_mlounge*.txt
 _inspect_moovies2/
+_inspect_moovies2_current/
+_pm_mlounge_*.txt
+_shield_*.txt
+_adb_*.txt
+fork-report.txt
+fork-progress.txt

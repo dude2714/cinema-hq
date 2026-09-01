@@ -1,9 +1,9 @@
 param(
     [string]$Serial = '0321418026779',
-    [string]$PackageName = 'com.app.mlounge',
+    [string]$PackageName,
     [string]$OutputApk = 'Moovies2.apk',
     [string]$ReleaseVersion = 'shield-copy',
-    [string]$Notes = 'Pulled from Shield source package',
+    [string]$Notes = 'Pulled from Shield donor app',
     [switch]$AllowFallbackDownloadCopy
 )
 
@@ -56,7 +56,22 @@ $changelogFile = Join-Path $repoRoot 'CHANGELOG.md'
 $reportFile = Join-Path $repoRoot 'pull-from-shield-report.txt'
 $adb = Resolve-Adb
 
-$pmPath = & $adb -s $Serial shell pm path $packageName 2>&1
+if (-not $PackageName) {
+    $top = & $adb -s $Serial shell dumpsys activity activities 2>&1
+    $topLine = $top | Select-String 'mResumedActivity:' | Select-Object -First 1
+    if (-not $topLine) {
+        throw 'Could not determine the foreground app on Shield. Open CinemaHQ first, then re-run the script.'
+    }
+
+    $match = [regex]::Match($topLine.ToString(), 'u\d+\s+([A-Za-z0-9._$]+)/')
+    if (-not $match.Success) {
+        throw 'Could not parse package name from the foreground Shield app.'
+    }
+
+    $PackageName = $match.Groups[1].Value
+}
+
+$pmPath = & $adb -s $Serial shell pm path $PackageName 2>&1
 $apkPathLine = $pmPath | Select-String '^package:' | Select-Object -First 1
 if (-not $apkPathLine) {
     throw "Could not resolve APK path for package $PackageName"
@@ -80,7 +95,7 @@ if ($AllowFallbackDownloadCopy -and ((-not (Test-Path -LiteralPath $targetApk)) 
 }
 
 if (-not (Test-Path -LiteralPath $targetApk)) {
-    throw "APK pull failed from source package $PackageName. Re-run with -AllowFallbackDownloadCopy only if you intentionally want the newest downloaded Cinema APK instead of the installed source package."
+    throw "APK pull failed from donor package $PackageName. Re-run with -AllowFallbackDownloadCopy only if you intentionally want the newest downloaded Cinema APK instead of the installed donor app."
 }
 
 $apk = Get-Item -LiteralPath $targetApk
@@ -129,7 +144,7 @@ UPDATED_UTC=$updatedUtc
 "@.Trim()
 [System.IO.File]::WriteAllText($reportFile, $reportContent, [System.Text.Encoding]::ASCII)
 
-Write-Host 'Pulled source package APK from Shield'
+Write-Host 'Pulled donor APK from Shield'
 Write-Host ('- Package: ' + $PackageName)
 Write-Host ('- Device path: ' + $deviceApkPath)
 Write-Host ('- Output: ' + $targetApk)

@@ -2,28 +2,60 @@
 
 Standalone Moovies2 APK repo.
 
-Source policy: use the original Cinema HQ app on the Shield as the donor source package `com.app.mlounge`, then archive the pulled APK here as `Moovies2.apk`.
+Release policy: this repo publishes the separated Moovies2 fork built from the CinemaHQ donor app.
 
 ## Files
 
-- `Moovies2.apk` - the downloadable standalone APK copied from Shield
+- `Moovies2.apk` - the downloadable standalone Moovies2 fork APK
 - `index.html` - landing page for GitHub Pages
 - `release.json` - current release metadata
 - `Start Moovies2.cmd` - local launcher for Windows
-- `scripts/Pull-Foreground-Apk-From-Shield.ps1` - pulls the pinned Shield source package `com.app.mlounge` into this repo as `Moovies2.apk`
+- `scripts/Pull-Foreground-Apk-From-Shield.ps1` - refreshes the CinemaHQ donor APK from Shield
+- `scripts/New-Moovies2Fork.ps1` - creates the decoded Moovies2 fork workspace from the donor APK
+- `scripts/Build-Moovies2Fork.cmd` - rebuilds the Moovies2 fork APK
+- `scripts/Sign-Moovies2Fork.cmd` - signs the rebuilt Moovies2 fork APK
+- `scripts/Install-Moovies2Fork-On-Shield.cmd` - installs the forked APK on Shield for testing
 
-## Shield pull flow
+## Current build
 
-1. Keep the original Cinema HQ app installed on the Shield as package `com.app.mlounge`.
-2. Run:
+- App name: `Moovies2`
+- Package: `com.dude2714.moovies2`
+- Donor source: `CinemaHQ` on Shield
+
+## Rebuild flow
+
+1. Open the CinemaHQ donor app on the Shield and leave it in the foreground.
+2. Refresh the donor APK:
 
 ```powershell
 .\scripts\Pull-Foreground-Apk-From-Shield.ps1
 ```
 
-3. The script resolves `com.app.mlounge` directly and stores that APK here as `Moovies2.apk`.
-4. If you explicitly want the newest downloaded `Cinema*.apk` copy from Shield storage instead of the installed source package, re-run with `-AllowFallbackDownloadCopy`.
-5. Commit and push this repo to GitHub.
+3. Regenerate the fork workspace:
+
+```cmd
+.\scripts\Run-Moovies2Fork.cmd
+```
+
+4. Rebuild the fork:
+
+```cmd
+.\scripts\Build-Moovies2Fork.cmd
+```
+
+5. Sign the fork:
+
+```cmd
+.\scripts\Sign-Moovies2Fork.cmd
+```
+
+6. Install the fork on Shield for testing:
+
+```cmd
+.\scripts\Install-Moovies2Fork-On-Shield.cmd
+```
+
+7. Copy the tested fork to `Moovies2.apk`, then commit and push this repo.
 
 ## Publish
 
