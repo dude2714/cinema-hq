@@ -2,3 +2,8 @@
 apk-work/
 Moovies2-*.apk
 pull-from-shield-report.txt
+_dumpsys_pkg_*.txt
+_packages_*.txt
+_pkg_path_*.txt
+_resolve_mlounge*.txt
+_inspect_moovies2/

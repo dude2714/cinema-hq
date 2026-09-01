@@ -1,8 +1,10 @@
 param(
     [string]$Serial = '0321418026779',
+    [string]$PackageName = 'com.app.mlounge',
     [string]$OutputApk = 'Moovies2.apk',
     [string]$ReleaseVersion = 'shield-copy',
-    [string]$Notes = 'Pulled from Shield foreground app'
+    [string]$Notes = 'Pulled from Shield source package',
+    [switch]$AllowFallbackDownloadCopy
 )
 
 $ErrorActionPreference = 'Stop'
@@ -54,22 +56,10 @@ $changelogFile = Join-Path $repoRoot 'CHANGELOG.md'
 $reportFile = Join-Path $repoRoot 'pull-from-shield-report.txt'
 $adb = Resolve-Adb
 
-$top = & $adb -s $Serial shell dumpsys activity activities 2>&1
-$topLine = $top | Select-String 'mResumedActivity:' | Select-Object -First 1
-if (-not $topLine) {
-    throw 'Could not determine foreground activity from Shield.'
-}
-
-$match = [regex]::Match($topLine.ToString(), 'u\d+\s+([A-Za-z0-9._$]+)/')
-if (-not $match.Success) {
-    throw 'Could not parse package name from foreground activity.'
-}
-
-$packageName = $match.Groups[1].Value
 $pmPath = & $adb -s $Serial shell pm path $packageName 2>&1
 $apkPathLine = $pmPath | Select-String '^package:' | Select-Object -First 1
 if (-not $apkPathLine) {
-    throw "Could not resolve APK path for package $packageName"
+    throw "Could not resolve APK path for package $PackageName"
 }
 
 $deviceApkPath = ($apkPathLine.ToString() -replace '^package:', '').Trim()
@@ -81,7 +71,7 @@ try {
     $pullFailed = $true
 }
 
-if ((-not (Test-Path -LiteralPath $targetApk)) -or $pullFailed) {
+if ($AllowFallbackDownloadCopy -and ((-not (Test-Path -LiteralPath $targetApk)) -or $pullFailed)) {
     $fallbackApkPath = Get-AccessibleFallbackApk -AdbPath $adb -SerialNumber $Serial
     if ($fallbackApkPath) {
         $deviceApkPath = $fallbackApkPath
@@ -90,7 +80,7 @@ if ((-not (Test-Path -LiteralPath $targetApk)) -or $pullFailed) {
 }
 
 if (-not (Test-Path -LiteralPath $targetApk)) {
-    throw "APK pull failed: $targetApk"
+    throw "APK pull failed from source package $PackageName. Re-run with -AllowFallbackDownloadCopy only if you intentionally want the newest downloaded Cinema APK instead of the installed source package."
 }
 
 $apk = Get-Item -LiteralPath $targetApk
@@ -103,7 +93,7 @@ $release = [ordered]@{
     apkFile = $OutputApk
     sizeBytes = [int64]$apk.Length
     sha256 = $sha
-    notes = "$Notes ($packageName)"
+    notes = "$Notes ($PackageName)"
 }
 $release | ConvertTo-Json | Set-Content -LiteralPath $releaseFile -Encoding utf8
 
@@ -114,7 +104,7 @@ if (-not (Test-Path -LiteralPath $changelogFile)) {
 $entry = @(
     "## $ReleaseVersion - $updatedUtc"
     "- APK: $OutputApk"
-    "- Package: $packageName"
+    "- Package: $PackageName"
     "- Size: $($apk.Length) bytes"
     "- SHA-256: $sha"
     "- Notes: $Notes"
@@ -130,16 +120,17 @@ if ($existing.StartsWith($header)) {
 }
 Set-Content -LiteralPath $changelogFile -Value $newContent -Encoding utf8
 
-@(
-    'PACKAGE=' + $packageName,
-    'APK_PATH=' + $deviceApkPath,
-    'OUTPUT_APK=' + $targetApk,
-    'SHA256=' + $sha,
-    'UPDATED_UTC=' + $updatedUtc
-) | Set-Content -LiteralPath $reportFile -Encoding ascii
+$reportContent = @"
+PACKAGE=$PackageName
+APK_PATH=$deviceApkPath
+OUTPUT_APK=$targetApk
+SHA256=$sha
+UPDATED_UTC=$updatedUtc
+"@.Trim()
+[System.IO.File]::WriteAllText($reportFile, $reportContent, [System.Text.Encoding]::ASCII)
 
-Write-Host 'Pulled foreground APK from Shield'
-Write-Host ('- Package: ' + $packageName)
+Write-Host 'Pulled source package APK from Shield'
+Write-Host ('- Package: ' + $PackageName)
 Write-Host ('- Device path: ' + $deviceApkPath)
 Write-Host ('- Output: ' + $targetApk)
 Write-Host ('- SHA-256: ' + $sha)

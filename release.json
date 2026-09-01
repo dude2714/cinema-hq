@@ -1,8 +1,8 @@
 ﻿{
     "version":  "shield-copy",
-    "updatedUtc":  "2026-08-31T03:26:10Z",
+    "updatedUtc":  "2026-09-01T00:21:18Z",
     "apkFile":  "Moovies2.apk",
-    "sizeBytes":  42269065,
-    "sha256":  "F27B8AE1BFB6620B4A649A3CD01B98F90A06280B733B8EA7606D12FDD90988B7",
-    "notes":  "Pulled from Shield foreground app (com.app.mlounge)"
+    "sizeBytes":  48069151,
+    "sha256":  "C55279B3858AC9BDD9678015E48DEDA1132BD999A63BB4FE7960041A02823BC0",
+    "notes":  "Pulled from Shield source package (com.app.mlounge)"
 }
